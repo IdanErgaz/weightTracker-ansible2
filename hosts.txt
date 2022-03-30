@@ -1,0 +1,6 @@
+#please insert the production ip.
+[production]
+
+#please insert the staging ip.
+[staging]
+
