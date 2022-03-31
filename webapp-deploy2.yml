@@ -28,12 +28,7 @@
 
 
 
-#initialize db in all ngroup odes
-  - name: run initdb script
-    shell: cd /home/rootAdmin/weightTracker && npm run initdb
-    register: initdb
-    tags:
-      - initdb
+
 #Add .env file to all nodes
   - name: add .env file
     shell: |
@@ -56,3 +51,31 @@
       PGDATABASE=postgres
       PGPASSWORD={{ pg_password }}
       PGPORT=5432" > /home/rootAdmin/weightTracker/.env;
+
+
+  #initialize db in all ngroup odes
+  - name: run initdb script
+    shell: cd /home/rootAdmin/weightTracker && npm run initdb
+    register: initdb
+    tags:
+      - initdb
+  #Install pm2 package
+  - name: install pm2
+    npm:
+      name: pm2
+      global: yes 
+
+  #Run pm2 startup 
+  - name: install pm2 startup
+    shell: pm2 startup && sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u rootAdmin --hp /home/rootAdmin
+
+#Add weightTracker app to pm2
+  - name: run app as pm2 process
+    shell: cd /home/rootAdmin/weightTracker && pm2 start src/index.js
+    register: out
+  - debug: var=out.stdout_lines
+#pm2 save configuration
+  - name: save process to run at start app
+    shell: pm2 save
+
+   

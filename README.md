@@ -3,36 +3,53 @@
 ---
 			
 			
-commands:
-ansible-playbook -i hosts webapp-deploy.yml
+command:
 
-```
-# Instructions
+ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
+
+## Instructions
 
  - Install ansible on ubuntu 16.04
  - Create ssh key and copy to remote machine
  - Configure remote machine to enable ansible to run it.
 
----
-## prerequisites (ON MASTER/CONTROLLER)
-```
-1.SSH to the loadbalancer fornted ip -> get from run output.
-2.ssh from loadbalancer  to the controller machine.
-3.run git clone https://github.com/IdanErgaz/weightTracker-ansible.git
-4. Run cd weightTracker-ansible
-5. Run chmod +x  weightTracker-ansible.sh
-4.Deploy all prerequisites using the attached script (weightTrackerDepoly.sh) The script will deploy ansible + python3
 
-- run the script and type "yes" for all.
+### Main files:
+webapp-deploy2.yml :
+
+~~~
+This is the playbook which includes all the commands and packages that need to 
+be run on all remote nodes
+~~~
+hosts.txt :
+
+~~~
+This file contains the groups and ips target
+
+~~~
+
+
+
+
+## prerequisites (ON MASTER/CONTROLLER)
+
+```
+- SSH to the loadbalancer fornted ip -> get from Terraform run output.
+- ssh from loadbalancer  to the controller machine. (you can find the ip under resource group-> controllerVM)
+- run git clone https://github.com/IdanErgaz/weightTracker-ansible2.git
+- Run cd weightTracker-ansible2/
+- Run chmod +x weightTrackerDepoly.sh
+- Deploy all prerequisites using the attached script (weightTrackerDepoly.sh) The script will deploy ansible + python3
+- run the script by typing ./weightTrackerDepoly.sh and type "yes" for all.
 
 ```
 
 ## Generate ssh key and copy to remote nodes
-# Do it from the Master node to each node (Slave)
+## Do it from the Master node to each node (Slave)
 ```
 $ ssh-keygen
 press enter for filename
-Overwrite - Y
+Overwrite - y
 press enter twice with passphrase empty
 
 Validate that key was created:
@@ -46,11 +63,13 @@ drwxr-xr-x 7 rootAdmin rootAdmin 4096 Mar 30 20:11 ..
 
 
 ```
-```
-copy the public key to all connected nodes (you can see it from the terraform
+
+## Copy the public key to all connected nodes (The nodes ip can be found under: resource group> vmss_lb>settings>Backend pool)
+~~~
 $ ssh-copy-id -i (username)@(node machine ip) - For example - ssh-copy-id -i userName@34.76.142.118
+Type the node password
 When promped whether to continue connecting press yes
-```
+~~~
 
 ## Configure remote machines (Slaves) to enable ansible to run commands on it.
 ```
@@ -100,15 +119,15 @@ $ exit
 
 ```
 
-# Repeat the copy key and flag check for ALL nodes!
+## Repeat the copy key and flag check for ALL nodes!
 
-# Exit to be on the controller > Edit the hosts file (On Master)
+# Exit to be on the controller machine (user ctrl D )> Edit the hosts file (On Master)
 
 
 
-### Update hosts file in editor
+## Update hosts file in editor
 ```
-sudo vi ~/weightTracker-ansible/hosts.txt
+sudo vi ~/weightTracker-ansible2/hosts.txt
 type i (for insert)
 Update the ip according to the vmss instances ips.
 as following:
@@ -120,26 +139,31 @@ as following:
 <ip1>
 <ip2>
 ```
-### Save entry and exit to terminal
+## Save entry and exit to terminal
 ```
 press esc
 press :wq
 ```
 
 
-### Update the ansVar.yml file 
+## Update the ansVar.yml file 
 ```
-$ sudo vi ~/weightTracker-ansible/ansVar.yml
-press i
 ***Please notice - the ansVar.yml file  will be sent  to you via discord.***
-update the LB_front_ip -> you can take it from the TERRAFORM output.
+
+$ sudo vi ~/weightTracker-ansible2/ansVar.yml
+Press i
+Copy the lines from the file you have recieved via Discord.
+Update the LB_front_ip -> you can take it from the TERRAFORM output.
 press esc
 press :wq
 ```
 
 ## Ensure valid connection between control machine and managed node machine
 ```
-$ ansible -m ping all
+Go into weightTracker-ansible2 directory
+cd ~/weightTracker-ansible2
+Run the command:
+$ ansible -m ping all -i ./hosts.txt
 ``` 
 
 The result should be as : 
@@ -149,5 +173,16 @@ The result should be as :
     "ping": "pong"
 }
 
-
-
+## Deploy the playbook on all group remote nodes
+```
+rootAdmin@Controller-Server:~/weightTracker-ansible2$ ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
+```
+## Update the OKKTA with the current load balancer front ip (get it from the Terraform run OUTPUT)
+```
+login to okta> navigate to Applications > select you webApp> Under General Settings> scroll down 
+Update the ip under: 'Sign-in redirect URIs' and 'Sign-out redirect URIs'.
+```
+## Use weight-tracker app via browser
+Open browser and type: <fronend lb ip>:8080
+for example:20.232.148.224:8080
+Have fun :)

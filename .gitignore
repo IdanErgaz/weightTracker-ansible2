@@ -29,7 +29,7 @@ website/node_modules
 .terraform.lock.hcl
 ansVar.yml
 website/vendor
-
+backup.txt
 .vscode/
 
 # Test exclusions
