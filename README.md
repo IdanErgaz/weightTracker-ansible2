@@ -2,11 +2,7 @@
 
 ---
 			
-			
-command:
-
-ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
-
+		
 ## Instructions
 
  - Install ansible on ubuntu 16.04
@@ -15,6 +11,8 @@ ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
 
 
 ### Main files:
+
+---
 webapp-deploy2.yml :
 
 ~~~
@@ -28,12 +26,18 @@ This file contains the groups and ips target
 
 ~~~
 
+---
+## Commands for Final Deployment:
+~~~
+ansible-playbook -i ./hosts.txt webapp-Deploy2.yml --extra-vars "group=production"
 
+ansible-playbook -i ./hosts.txt webapp-Deploy2.yml --extra-vars "group=staging"
+~~~
 
-
+---
 ## prerequisites (ON MASTER/CONTROLLER)
 
-```
+~~~
 - SSH to the loadbalancer fornted ip -> get from Terraform run output.
 - ssh from loadbalancer  to the controller machine. (you can find the ip under resource group-> controllerVM)
 - run git clone https://github.com/IdanErgaz/weightTracker-ansible2.git
@@ -42,9 +46,9 @@ This file contains the groups and ips target
 - Deploy all prerequisites using the attached script (weightTrackerDepoly.sh) The script will deploy ansible + python3
 - run the script by typing ./weightTrackerDepoly.sh and type "yes" for all.
 
-```
+~~~
 
-## Generate ssh key and copy to remote nodes
+## Generate ssh key and copy to remote nodes:
 ## Do it from the Master node to each node (Slave)
 ```
 $ ssh-keygen
@@ -124,7 +128,7 @@ $ exit
 # Exit to be on the controller machine (user ctrl D )> Edit the hosts file (On Master)
 
 
-
+---
 ## Update hosts file in editor
 ```
 sudo vi ~/weightTracker-ansible2/hosts.txt
@@ -153,7 +157,10 @@ press :wq
 $ sudo vi ~/weightTracker-ansible2/ansVar.yml
 Press i
 Copy the lines from the file you have recieved via Discord.
+
 Update the LB_front_ip -> you can take it from the TERRAFORM output.
+Update the 'group' variable value which you want to deploy
+Update the POSTGRESQL details (basicly need to switch between staging/production)
 press esc
 press :wq
 ```
@@ -173,16 +180,27 @@ The result should be as :
     "ping": "pong"
 }
 
-## Deploy the playbook on all group remote nodes
-```
+---
+## Playbook Deployment: Deploy the playbook on all group remote nodes
+~~~
+Go into weightTracker-ansible2 directory
+cd ~/weightTracker-ansible2
+
+For production group:
+ansible-playbook -i ./hosts.txt webapp-Deploy2.yml --extra-vars "group=production"
+~~~
 rootAdmin@Controller-Server:~/weightTracker-ansible2$ ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
-```
+~~~
+For staging group:
+Run:
+ansible-playbook -i ./hosts.txt webapp-deploy2.yml --extra-vars "group=staging"
+~~~
 ## Update the OKKTA with the current load balancer front ip (get it from the Terraform run OUTPUT)
 ```
 login to okta> navigate to Applications > select you webApp> Under General Settings> scroll down 
 Update the ip under: 'Sign-in redirect URIs' and 'Sign-out redirect URIs'.
 ```
 ## Use weight-tracker app via browser
-Open browser and type: <fronend lb ip>:8080
+~~~Open browser and type: <fronend lb ip>:8080
 for example:20.232.148.224:8080
-Have fun :)
+Have fun :)~~~
