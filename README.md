@@ -8,6 +8,8 @@
  - Install ansible on ubuntu 16.04
  - Create ssh key and copy to remote machine
  - Configure remote machine to enable ansible to run it.
+ - Install dependencies
+ - Run weight Tracker app
 
 
 ### Main files:
@@ -35,11 +37,11 @@ ansible-playbook -i ./hosts.txt webapp-Deploy2.yml --extra-vars "group=staging"
 ~~~
 
 ---
-## prerequisites (ON MASTER/CONTROLLER)
+## Prerequisites (ON MASTER/CONTROLLER)
 
 ~~~
-- SSH to the loadbalancer fornted ip -> get from Terraform run output.
-- ssh from loadbalancer  to the controller machine. (you can find the ip under resource group-> controllerVM)
+- Open SSH connection to the loadbalancer fornted ip -> get from Terraform run output.
+- Open SSH from loadbalancer  to the controller machine. (you can find the ip under resource group-> controllerVM)
 - run git clone https://github.com/IdanErgaz/weightTracker-ansible2.git
 - Run cd weightTracker-ansible2/
 - Run chmod +x weightTrackerDepoly.sh
@@ -152,15 +154,16 @@ press :wq
 
 ## Update the ansVar.yml file 
 ```
-***Please notice - the ansVar.yml file  will be sent  to you via discord.***
+***Please noticed - the ansVar.yml file  will be sent  to you via discord.***
 
 $ sudo vi ~/weightTracker-ansible2/ansVar.yml
 Press i
 Copy the lines from the file you have recieved via Discord.
 
 Update the LB_front_ip -> you can take it from the TERRAFORM output.
-Update the 'group' variable value which you want to deploy
-Update the POSTGRESQL details (basicly need to switch between staging/production)
+Update the 'group' variable value which you want to deploy.
+Update the POSTGRESQL details (basicly need to switch between staging/production).
+Update the OKTA Client ID and Client Secret.
 press esc
 press :wq
 ```
@@ -187,7 +190,7 @@ Go into weightTracker-ansible2 directory
 cd ~/weightTracker-ansible2
 
 For production group:
-ansible-playbook -i ./hosts.txt webapp-Deploy2.yml --extra-vars "group=production"
+ansible-playbook -i ./hosts.txt webapp-deploy2.yml --extra-vars "group=production"
 ~~~
 rootAdmin@Controller-Server:~/weightTracker-ansible2$ ansible-playbook webapp-Deploy2.yml -i ./hosts.txt
 ~~~
