@@ -3,7 +3,7 @@
   gather_facts: no
 
   vars_files:
-    - ansVar.yml
+  #  - ansVar.yml
 
   tasks:
 
