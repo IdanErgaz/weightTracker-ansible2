@@ -2,11 +2,11 @@
   become: yes
   gather_facts: no
 
-  #vars_files:
-  #  - ansVar.yml
+  vars_files:
+   - ansVar.yml
 
-  variables: 
-  - group: ansVars
+  # variables: 
+  # - group: ansVars
 
   tasks:
 

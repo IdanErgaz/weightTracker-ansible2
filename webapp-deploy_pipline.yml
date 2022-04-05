@@ -1,0 +1,81 @@
+- hosts: "{{ group }}"
+  become: yes
+  gather_facts: no
+
+  vars_files:
+   - ansVar.yml
+
+  # variables: 
+  # - group: ansVars
+
+  tasks:
+
+
+#Copy files from controller to the instances nodes.
+  - name: Copy the artifact from master to machines
+    copy: src={{code_source}} dest={{code_dest}}
+
+#   #node and npm installation
+#   - name: install node
+#     shell: |
+#       curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - && sudo apt-get install -y nodejs
+
+
+#   - name: Install packages based on package.json using the npm
+#     npm:
+#       path: /home/rootAdmin/weightTracker
+#       state: present
+
+
+
+
+# #Add .env file to all nodes
+#   - name: add .env file
+#     shell: |
+#       echo "
+#       # Host configuration
+#       PORT=8080
+#       HOST={{host}}
+#       HOST_URL=http://{{ LB_front_ip }}:8080
+#       COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!
+#       NODE_ENV=development
+
+#       # Okta configuration
+#       OKTA_ORG_URL={{ okta_url }}
+#       OKTA_CLIENT_ID={{ okta_client_id }}
+#       OKTA_CLIENT_SECRET={{ okta_client_secret }}
+
+#       # Postgres configuration
+#       PGHOST={{ pghost }}
+#       PGUSERNAME={{ pg_username }}
+#       PGDATABASE=postgres
+#       PGPASSWORD={{ pg_password }}
+#       PGPORT=5432" > /home/rootAdmin/weightTracker/.env;
+
+
+#   #initialize db in all ngroup odes
+#   - name: run initdb script
+#     shell: cd /home/rootAdmin/weightTracker && npm run initdb
+#     register: initdb
+#     tags:
+#       - initdb
+#   #Install pm2 package
+#   - name: install pm2
+#     npm:
+#       name: pm2
+#       global: yes 
+
+#   #Run pm2 startup 
+#   - name: install pm2 startup
+#     shell: pm2 startup && sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u rootAdmin --hp /home/rootAdmin
+
+# #Add weightTracker app to pm2
+#   - name: run app as pm2 process
+#     shell: cd /home/rootAdmin/weightTracker && pm2 start src/index.js
+#     register: out
+#   - debug: var=out.stdout_lines
+# #pm2 save configuration
+#   - name: save process to run at start app
+#     shell: pm2 save
+
+   
